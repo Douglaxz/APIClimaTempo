@@ -1,2 +1,2 @@
-# APIClimaTempo
-site para consumir api da clima tempo
+# QuizCreator
+site para criar testes e pesquisas
