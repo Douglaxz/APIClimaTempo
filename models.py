@@ -20,3 +20,12 @@ class tb_usertype(db.Model):
     status_usertype = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.name    
+
+# criação da classe tipousuário conectada com o banco de dados mysql
+class tb_tipostatus(db.Model):
+    cod_tipostatus = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    desc_tipostatus = db.Column(db.String(50), nullable=False)
+    status_tipostatus = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name    
+

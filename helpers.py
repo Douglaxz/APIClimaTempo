@@ -84,3 +84,27 @@ class FormularioTipoUsuarioVisualizar(FlaskForm):
     descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')    
+
+##################################################################################################################################
+#TIPO DE STATUS
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: tipo de status
+#TIPO: edição
+#TABELA: tb_usertype
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioTipoStatusEdicao(FlaskForm):
+    descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    salvar = SubmitField('Salvar')    
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: tipo de status
+#TIPO: visualização
+#TABELA: tb_usertype
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioTipoStatusVisualizar(FlaskForm):
+    descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')    

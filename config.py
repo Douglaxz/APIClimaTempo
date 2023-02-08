@@ -1,7 +1,7 @@
 #from flask_sqlalchemy import SQLAlchemy
 import os
 
-SECRET_KEY = 'personal2023'
+SECRET_KEY = 'quizmaker2023'
 
 
 # conexão com o banco de dados mysql
@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URI = \
         usuario ='root',
         senha = '12345',
         servidor ='localhost',
-        database ='db_personal')
+        database ='db_quizmaker')
 
 #CAMINHO DO UPLOAD (SE DISPONIVEL)
 UPLOAD_PATH = os.path.dirname(os.path.abspath(__file__)) + '/uploads'

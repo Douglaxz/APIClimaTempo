@@ -5,14 +5,17 @@ import time
 from datetime import date, timedelta
 from quizcreator import app, db
 from models import tb_user,\
-    tb_usertype
+    tb_usertype,\
+    tb_tipostatus
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
     FormularioUsuario, \
     FormularioUsuarioVisualizar, \
     FormularioTipoUsuarioEdicao,\
-    FormularioTipoUsuarioVisualizar
+    FormularioTipoUsuarioVisualizar,\
+    FormularioTipoStatusEdicao,\
+    FormularioTipoStatusVisualizar    
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -419,3 +422,124 @@ def atualizarTipoUsuario():
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarTipoUsuario', id=request.form['id']))    
 
+##################################################################################################################################
+#TIPO DE STATUS PESQUISA
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: status
+#FUNÇÃO: tela do sistema para mostrar os tipos de status de pesquisa cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/tipostatus', methods=['POST','GET'])
+def tipostatus():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('tipostatus')))         
+    page = request.args.get('page', 1, type=int)
+    form = FormularPesquisa()   
+    pesquisa = form.pesquisa.data
+    if pesquisa == "":
+        pesquisa = form.pesquisa_responsiva.data
+    if pesquisa == "" or pesquisa == None:     
+        tiposstatus = tb_tipostatus.query.order_by(tb_tipostatus.desc_tipostatus)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+    else:
+        tiposstatus = tb_usertype.query.order_by(tb_tipostatus.desc_tipostatus)\
+        .filter(tb_usertype.desc_tipostatus.ilike(f'%{pesquisa}%'))\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
+    return render_template('tipostatus.html', titulo='Tipo Status', tiposstatus=tiposstatus, form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoTipoStatus
+#FUNÇÃO: mostrar o formulário de cadastro de tipo de status
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoTipoStatus')
+def novoTipoStatus():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoTipoStatus'))) 
+    form = FormularioTipoStatusEdicao()
+    return render_template('novoTipoStatus.html', titulo='Novo Tipo Status', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarTipoStatus
+#FUNÇÃO: inserir informações do tipo de statys no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarTipoStatus', methods=['POST',])
+def criarTipoStatus():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarTipoStatus')))     
+    form = FormularioTipoStatusEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarTipoStatus'))
+    desc  = form.descricao.data
+    status = form.status.data
+    tipoustatus = tb_tipostatus.query.filter_by(desc_tipostatus=desc).first()
+    if tipoustatus:
+        flash ('Tipo status já existe','danger')
+        return redirect(url_for('tipousuario')) 
+    novoTipoStatus = tb_tipostatus(desc_tipostatus=desc, status_tipostatus=status)
+    flash('Tipo de status criado com sucesso!','success')
+    db.session.add(novoTipoStatus)
+    db.session.commit()
+    return redirect(url_for('tipostatus'))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarTipoStatus
+#FUNÇÃO: mostrar formulário de visualização dos tipos de status cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarTipoStatus/<int:id>')
+def visualizarTipoStatus(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarTipoStatus')))  
+    tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
+    form = FormularioTipoStatusVisualizar()
+    form.descricao.data = tipostatus.desc_usertype
+    form.status.data = tipostatus.status_usertype
+    return render_template('visualizarTipoStatus.html', titulo='Visualizar Tipo Status', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarTipoUsuario
+##FUNÇÃO: mostrar formulário de edição dos tipos de usuários cadastrados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/editarTipoStatus/<int:id>')
+def editarTipoStatus(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarTipoStatus')))  
+    tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
+    form = FormularioTipoStatusEdicao()
+    form.descricao.data = tipostatus.desc_usertype
+    form.status.data = tipostatus.status_usertype
+    return render_template('editarTipoStatus.html', titulo='Editar Tipo Status', id=id, form=form)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarTipoUsuario
+#FUNÇÃO: alterar as informações dos tipos de usuários no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarTipoStatus', methods=['POST',])
+def atualizarTipoStatus():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarTipoStatus')))      
+    form = FormularioTipoStatusEdicao(request.form)
+    if form.validate_on_submit():
+        id = request.form['id']
+        tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=request.form['id']).first()
+        tipostatus.desc_usertype = form.descricao.data
+        tipostatus.status_usertype = form.status.data
+        db.session.add(tipostatus)
+        db.session.commit()
+        flash('Tipo de status atualizado com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarTipoStatus', id=request.form['id']))    
