@@ -340,17 +340,6 @@ q:before, q:after {
     line-height: 170%;
 }
 
-.boxtitulo {
-    margin: 5px auto;
-    width: 70%; /* Valor da Largura */
-    align-items: left;
-    justify-content: left;
-    border-radius: 10px;
-    padding: 10px;
-    line-height: 50px;
-    font-size: 18px;
-    display: flex;
-}
 
 .box_titulo {
     margin: 5px auto;
@@ -381,6 +370,21 @@ q:before, q:after {
     padding: 10px;
 }
 
+.btn_titulo{
+    background: #71C3FF;
+    border: 1px solid black;
+}
+
+.busca__input {
+    padding: 10px;
+    align-items: center;
+    background-color: transparent;
+    font-size: 1rem;
+    height: 50px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid black;
+}
 
 .boxtitulocombusca {
     margin: 5px auto;
@@ -392,7 +396,7 @@ q:before, q:after {
     text-align: center;   
     font-weight: bold;
     display: flex;
-    border: 3px solid black;
+    border: 2px solid black;
 }
 
 .boxtitulocombusca_responsivo {
@@ -430,6 +434,15 @@ header{
 
 
 @media screen and (max-width: 1040px){
+
+    .boxtitulo {
+        display: none;
+    }
+
+    .boxtitulocombusca {
+        display: none;
+    }
+
     .boxformulario {
         margin: 10px auto;
         width: 100%; /* Valor da Largura */
@@ -440,24 +453,38 @@ header{
         line-height: 170%;
     }
 
-    .boxtitulo {
-        display: none;
+    .box_titulo {
+        font-size: 4vw;
+        width: 50%;
+        font-weight: bold;     
+    }    
+
+    .box_botoes {
+        width: 17%; /* Valor da Largura */
+        align-items: left;
+        padding: 1px;
     }
 
-    .boxtitulocombusca {
-        display: none;
-    }
+    .busca__input {
+        align-items: center;
+        background-color: transparent;
+        font-size: 1rem;
+    }    
 
     .boxtitulocombusca_responsivo {
-        display:block;
-        line-height: 70px;
+        display: block;
+        line-height: 40px;
         border-radius: 10px;  
-        text-align: center;   
-        font-weight: bold;     
-        font-size: 18px;      
-        color: #FFF;
-        width: 95vw;
-        opacity: 0.8;
+        text-align: left;   
+        color: black;
+        width: 88vw;
+        height: 15vh;
+        padding: 1px;
+    }
+
+    .box_organizadora{
+        display: flex;
+        align-items: center;
     }
 
     .boxcentral {
