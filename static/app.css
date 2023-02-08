@@ -12,7 +12,7 @@ small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
+caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed, 
 figure, figcaption, footer, header, hgroup, 
 menu, nav, output, ruby, section, summary,
@@ -418,6 +418,7 @@ q:before, q:after {
     line-height: 170%;
     text-align: left;
     height: auto;
+    border: 2px solid black;
 }
 
 footer {
@@ -425,12 +426,26 @@ footer {
     height: 12vh;
     bottom:0;
     background-color: white;
-    text-align: right;
+    text-align: center;
 }
 
 header{
     opacity: 0.9;
 }
+
+thead{
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    background-color: #71C3FF;
+
+}
+
+nav {
+    border: 2px solid black;
+}
+
+
 
 
 @media screen and (max-width: 1040px){
@@ -488,12 +503,17 @@ header{
     }
 
     .boxcentral {
-        align-items: center;
-        justify-content: center;
+        align-items: left;
+        justify-content: left;
         border-radius: 10px;
-        line-height: 170%;
+        line-height: 150%;
         text-align: left;
-        width: 95vw;
+        width: 88vw;
+        border: 2px solid black;
+        padding: 10px;
+        line-height: 40px;
+        margin-top: 10px;
+        margin-left: 0px;
     }
 
 
@@ -522,11 +542,13 @@ header{
 
     footer {
         width: 100%;
-        height: 12vh;
+        height: 10vh;
         bottom:0;
-        background-color: #081624;
-        opacity: 0.6;
-        text-align: right;
+        background-color: white;
+        text-align: center;
+        border: 2px solid black;
+        vertical-align: top;
+
     }    
 
     .menu_responsivo {
