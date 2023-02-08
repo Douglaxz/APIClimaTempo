@@ -485,9 +485,31 @@ nav {
     margin: 2px;
 }
 
-
+.box_alert {
+    width: 70%; /* Valor da Largura */
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 10px;  
+    line-height: 170%;
+    text-align: center;
+    height: auto;
+    margin: auto;
+}
 
 @media screen and (max-width: 1040px){
+
+    .box_alert {
+        width: 94vw;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        padding: 10px;  
+        line-height: 170%;
+        text-align: center;
+        height: auto;
+        margin: auto;
+    }
 
     .box_cabecalho {
         width: 94vw;

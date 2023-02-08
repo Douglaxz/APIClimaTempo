@@ -49,6 +49,7 @@
 </header>
 <body>
   <div class="container" style="min-height: 620px"> 
+    <div class="box_alert">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -59,6 +60,7 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+    </div>
     {% block conteudo %} 
     {% endblock%}
   </div>
