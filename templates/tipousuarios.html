@@ -38,9 +38,9 @@
               <td class="text-left">{{ tipousuario.desc_usertype }}</td>
               <td class="text-left">
                 {% if tipousuario.status_usertype == 0: %}
-                <i class="bi bi-toggle-on text-success" style="font-size:2rem; color:white;">
+                <i class="btn bi bi-toggle-on text-success" style="font-size:2rem; color:white;">
                 {% else %}
-                <i class="bi bi-toggle-off text-danger" style="font-size:2rem; color:white;">
+                <i class="btn bi bi-toggle-off text-danger" style="font-size:2rem; color:white;">
                 {% endif %}                       
               <td>
                 <a class="btn" href="{{url_for('visualizarTipoUsuario',id=tipousuario.cod_usertype)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>

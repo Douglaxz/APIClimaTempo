@@ -501,8 +501,8 @@ def visualizarTipoStatus(id):
         return redirect(url_for('login',proxima=url_for('visualizarTipoStatus')))  
     tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
     form = FormularioTipoStatusVisualizar()
-    form.descricao.data = tipostatus.desc_usertype
-    form.status.data = tipostatus.status_usertype
+    form.descricao.data = tipostatus.desc_tipostatus
+    form.status.data = tipostatus.status_tipostatus
     return render_template('visualizarTipoStatus.html', titulo='Visualizar Tipo Status', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -517,8 +517,8 @@ def editarTipoStatus(id):
         return redirect(url_for('login',proxima=url_for('editarTipoStatus')))  
     tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
     form = FormularioTipoStatusEdicao()
-    form.descricao.data = tipostatus.desc_usertype
-    form.status.data = tipostatus.status_usertype
+    form.descricao.data = tipostatus.desc_tipostatus
+    form.status.data = tipostatus.status_tipostatus
     return render_template('editarTipoStatus.html', titulo='Editar Tipo Status', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -535,8 +535,8 @@ def atualizarTipoStatus():
     if form.validate_on_submit():
         id = request.form['id']
         tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=request.form['id']).first()
-        tipostatus.desc_usertype = form.descricao.data
-        tipostatus.status_usertype = form.status.data
+        tipostatus.desc_tipostatus = form.descricao.data
+        tipostatus.status_tipostatus = form.status.data
         db.session.add(tipostatus)
         db.session.commit()
         flash('Tipo de status atualizado com sucesso!','success')
