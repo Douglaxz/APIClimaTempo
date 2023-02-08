@@ -3,44 +3,42 @@
 <form method="post" action="{{ url_for('criarUsuario') }}" enctype="multipart/form-data" id="formulario">
   <br>
       <!-- Padrão para desktop/notebook -->
-      <div class="boxtitulo bg-dark justify-content-between">
-        <div class="bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-person" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
+      <div class="boxtitulo bg-white">
+        <div class="box_titulo"><i class="bi bi-person" style="font-size:2rem; color:black;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
         <div class="col-md-4 offset-md-4" style="text-align: right;">
-          <a class="btn btn-primary" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a>
-          <a class="btn btn-danger" href="{{ url_for('usuario') }}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
+          <a class="btn btn_titulo" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a>
+          <a class="btn btn_titulo" href="{{ url_for('usuario') }}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
         </div>
       </div>
       <!-- Padrão para mobile -->
-      <div class="boxtitulocombusca_responsivo bg-dark">
-        <div class="bd-highlight col-lg text-left text-white font-weight-bold "><i class="bi bi-person" style="font-size:2rem; color:white;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
-        <div class="col-md-4 offset-md-4" style="text-align: center;">
-          <a class="btn btn-primary" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a>
-          <a class="btn btn-danger" href="{{ url_for('usuario') }}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
-        </div>
+      <div class="boxtitulo_responsivo bg-white">
+          <div class="box_titulo"><i class="bi bi-person" style="font-size:2rem; color:black;" data-toggle="tooltip" data-placement="right" title="Usuários"></i> {{ titulo }}</div>
+          <div class="box_botoes"><a class="btn btn_titulo" href="#" onclick="myFunction()"><i class="bi bi-save" style="font-size:1.5rem; color:white;"></i></a></div>
+          <div class="box_botoes"><a class="btn btn_titulo" href="{{ url_for('usuario') }}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a></div>
       </div>
       <!-- conteudo -->
-  <div class="boxformulario bg-light p-2 text-dark bg-opacity-50">
+  <div class="boxformulario bg-light">
     <fieldset>
       {{form.csrf_token()}}
       <div class="form-group">
-        {{form.nome.label(class="form-label")}}
-        {{form.nome(class="form-control")}}
+        {{form.nome.label(class="rotulo")}}
+        {{form.nome(class="busca__input")}}
       </div>
       <div class="form-group">
-        {{form.email.label(class="form-label")}}
-        {{form.email(class="form-control")}}
+        {{form.email.label(class="rotulo")}}
+        {{form.email(class="busca__input")}}
       </div>
       <div class="form-group">
-        {{form.login.label(class="form-label")}}
-        {{form.login(class="form-control")}}
+        {{form.login.label(class="rotulo")}}
+        {{form.login(class="busca__input")}}
       </div>
       <div class="form-group">
-        {{form.tipousuario.label(class="form-label")}}
-        {{form.tipousuario(class="form-control")}}
+        {{form.tipousuario.label(class="rotulo")}}
+        {{form.tipousuario(class="busca__input")}}
       </div>
       <div class="form-group">
-        {{form.status.label(class="form-label")}}
-        {{form.status(class="form-control")}}
+        {{form.status.label(class="rotulo")}}
+        {{form.status(class="busca__input")}}
       </div>         
     </fieldset>
   </div>

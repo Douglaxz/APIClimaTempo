@@ -337,7 +337,8 @@ q:before, q:after {
     justify-content: center;
     border-radius: 10px;
     padding: 10px;  
-    line-height: 170%;
+    line-height: 200%;
+    border: 2px solid black;
 }
 
 
@@ -384,6 +385,22 @@ q:before, q:after {
     padding: 10px;
     width: 100%;
     border: 1px solid black;
+}
+
+.boxtitulo {
+    margin: 5px auto;
+    width: 70%; /* Valor da Largura */
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 5px;
+    line-height: 50px;
+    font-size: 2vw;
+    color: black;
+    text-align: center;   
+    font-weight: bold;
+    display: flex;
+    border: 2px solid black;
 }
 
 .boxtitulocombusca {
@@ -445,6 +462,10 @@ nav {
     border: 2px solid black;
 }
 
+.rotulo{
+    color: blak;
+    margin: 2px;
+}
 
 
 
@@ -459,19 +480,37 @@ nav {
     }
 
     .boxformulario {
-        margin: 10px auto;
-        width: 100%; /* Valor da Largura */
+        width: 88vw;
         align-items: center;
         justify-content: center;
         border-radius: 10px;
-        padding: 10px;  
-        line-height: 170%;
+        border: 2px solid black;
+        padding: 10px;
+        line-height: 40px;
+        margin-top: 10px;
+        margin-left: 0px;    
+        background-color: white;
     }
 
     .box_titulo {
         font-size: 4vw;
         width: 50%;
         font-weight: bold;     
+    }    
+
+    .boxtitulo_responsivo {
+        width: 88vw;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        padding: 5px;
+        line-height: 50px;
+        font-size: 2vw;
+        color: black;
+        text-align: left;   
+        font-weight: bold;
+        display: flex;
+        border: 2px solid black;
     }    
 
     .box_botoes {
@@ -482,7 +521,19 @@ nav {
 
     .busca__input {
         align-items: center;
-        background-color: transparent;
+        background-color: white;
+        font-size: 1rem;
+    }    
+
+    .inputformulario {
+        align-items: center;
+        background-color: white;
+        font-size: 1rem;
+    } 
+
+    .inputformulario {
+        align-items: center;
+        background-color: white;
         font-size: 1rem;
     }    
 
