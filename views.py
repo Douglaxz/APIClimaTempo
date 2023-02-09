@@ -568,18 +568,18 @@ def pesquisa():
         pesquisa = form.pesquisa_responsiva.data
     if pesquisa == "" or pesquisa == None:     
         pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
-        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_status)\
-        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus)\
+        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_tipostatus)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus, tb_pesquisa.cod_tipostatus)\
         .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
         pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
-        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_status)\
+        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_tipostatus)\
         .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus)\
         .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
         .filter(tb_pesquisa.nome_pesquisa.ilike(f'%{pesquisa}%'))\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
-    return render_template('tipostatus.html', titulo='Tipo Status', pesquisas=pesquisas, form=form)
+    return render_template('pesquisas.html', titulo='Pesquisas', pesquisas=pesquisas, form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: novoPesquisa
@@ -608,15 +608,16 @@ def criarPesquisa():
     if not form.validate_on_submit():
         flash('Por favor, preencha todos os dados','danger')
         return redirect(url_for('criarPesquisa'))
-    desc  = form.descricao.data
+    desc  = form.desc.data
     nome  = form.nome.data
     status = form.status.data
     codext = form.codext.data
+    coduser = session['coduser_logado']
     pesquisa = tb_pesquisa.query.filter_by(nome_pesquisa=desc).first()
     if pesquisa:
         flash ('Pesquisa já existe','danger')
         return redirect(url_for('pesquisa')) 
-    novoPesquisa = tb_pesquisa(desc_pesquisa=desc, status_pesquisa=status, nome_pesquisa=nome, codext_pesquisa=codext)
+    novoPesquisa = tb_pesquisa(desc_pesquisa=desc, cod_tipostatus=status, nome_pesquisa=nome, codext_pesquisa=codext, cod_user=coduser)
     flash('Pesquisa criada com sucesso!','success')
     db.session.add(novoPesquisa)
     db.session.commit()
@@ -634,8 +635,8 @@ def visualizarPesquisa(id):
         return redirect(url_for('login',proxima=url_for('visualizarPesquisa')))  
     pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
     form = FormularioPesquisaVisualizar()
-    form.descricao.data = pesquisa.desc_pesquisa
-    form.status.data = pesquisa.status_pesquisa
+    form.desc.data = pesquisa.desc_pesquisa
+    form.status.data = pesquisa.cod_tipostatus
     form.nome.data = pesquisa.nome_pesquisa
     form.codext.data = pesquisa.codext_pesquisa
     return render_template('visualizarPesquisa.html', titulo='Visualizar Pesquisa', id=id, form=form)   
@@ -652,8 +653,8 @@ def editarPesquisa(id):
         return redirect(url_for('login',proxima=url_for('editarPesquisa')))  
     pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
     form = FormularioPesquisaEdicao()
-    form.descricao.data = pesquisa.desc_pesquisa
-    form.status.data = pesquisa.status_pesquisa
+    form.desc.data = pesquisa.desc_pesquisa
+    form.status.data = pesquisa.cod_tipostatus
     form.nome.data = pesquisa.nome_pesquisa
     form.codext.data = pesquisa.codext_pesquisa
     return render_template('editarPesquisa.html', titulo='Editar Pesquisa', id=id, form=form)   
@@ -672,8 +673,8 @@ def atualizarPesquisa():
     if form.validate_on_submit():
         id = request.form['id']
         pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=request.form['id']).first()
-        pesquisa.desc_pesquisa = form.descricao.data
-        pesquisa.status_pesquisa = form.status.data
+        pesquisa.desc_pesquisa = form.desc.data
+        pesquisa.cod_tipostatus = form.status.data
         pesquisa.nome_pesquisa = form.nome.data
         pesquisa.codext_pesquisa = form.codext.data
         db.session.add(pesquisa)

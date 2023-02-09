@@ -119,8 +119,8 @@ class FormularioTipoStatusVisualizar(FlaskForm):
 #TABELA: tb_pesquisa
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioPesquisaEdicao(FlaskForm):
-    nome = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
-    codext = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    codext = StringField('Código externo:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
     desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={"placeholder": "digite a descrição do tipo de status"})
     status = SelectField('Situação:', coerce=int,  choices=[(g.cod_tipostatus, g.desc_tipostatus) for g in tb_tipostatus.query.order_by('desc_tipostatus')])
     salvar = SubmitField('Salvar')    
@@ -131,9 +131,8 @@ class FormularioPesquisaEdicao(FlaskForm):
 #TABELA: tb_ustb_pesquisaertype
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioPesquisaVisualizar(FlaskForm):
-    nome = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
-    codext = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    codext = StringField('Código externo:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
-    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int,  choices=[(g.cod_tipostatus, g.desc_tipostatus) for g in tb_tipostatus.query.order_by('desc_tipostatus')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')

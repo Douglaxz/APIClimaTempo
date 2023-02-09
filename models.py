@@ -35,7 +35,7 @@ class tb_pesquisa(db.Model):
     nome_pesquisa = db.Column(db.String(200), nullable=False)
     desc_pesquisa = db.Column(db.String(200), nullable=False)
     codext_pesquisa = db.Column(db.String(50), nullable=False)
-    status_tipostatus = db.Column(db.Integer, nullable=False)
+    cod_tipostatus = db.Column(db.Integer, nullable=False)
     cod_user = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.name    
