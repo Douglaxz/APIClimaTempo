@@ -7,7 +7,8 @@ from quizcreator import app, db
 from models import tb_user,\
     tb_usertype,\
     tb_tipostatus,\
-    tb_pesquisa
+    tb_pesquisa,\
+    tb_pergunta
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -18,7 +19,9 @@ from helpers import \
     FormularioTipoStatusEdicao,\
     FormularioTipoStatusVisualizar,\
     FormularioPesquisaEdicao,\
-    FormularioPesquisaVisualizar
+    FormularioPesquisaVisualizar,\
+    FormularioPerguntaEdicao,\
+    FormularioPerguntaVisualizar
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -548,7 +551,7 @@ def atualizarTipoStatus():
     return redirect(url_for('visualizarTipoStatus', id=request.form['id']))    
 
 ##################################################################################################################################
-#TIPO DE PESQUISA
+#PESQUISA
 ##################################################################################################################################
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -682,4 +685,48 @@ def atualizarPesquisa():
         flash('Pesquisa atualizado com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarPesquisa', id=request.form['id']))    
+    return redirect(url_for('visualizarPesquisa', id=request.form['id'])) 
+
+##################################################################################################################################
+#PERGUNTA
+##################################################################################################################################   
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoPergunta
+#FUNÇÃO: mostrar o formulário de cadastro de pergunta
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoPergunta/<int:id>')
+def novoPergunta(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoPergunta'))) 
+    form = FormularioPerguntaEdicao()
+    return render_template('novoPergunta.html', titulo='Nova Pergunta', form=form, id=id)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarPesquisa
+#FUNÇÃO: inserir informações de pesquisa no banco de dados
+#PODE ACESSAR: usuários do tipo administrador
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarPergunta', methods=['POST',])
+def criarPergunta():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarPergunta')))     
+    form = FormularioPerguntaEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarPergunta'))
+    id = request.form['id']
+    desc  = form.desc.data
+    status = form.status.data
+    cod_pesquisa = id
+    pergunta = tb_pergunta.query.filter_by(desc_pergunta=desc).first()
+    if pergunta:
+        flash ('Pergunta já existe','danger')
+        return redirect(url_for('pesquisa')) 
+    novoPergunta = tb_pergunta(desc_pergunta=desc, status_pergunta=status, cod_pesquisa=cod_pesquisa)
+    flash('Pergunta criada com sucesso!','success')
+    db.session.add(novoPergunta)
+    db.session.commit()
+    return redirect(url_for('visualizarPesquisa', id=id))

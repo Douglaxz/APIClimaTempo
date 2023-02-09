@@ -136,3 +136,26 @@ class FormularioPesquisaVisualizar(FlaskForm):
     desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int,  choices=[(g.cod_tipostatus, g.desc_tipostatus) for g in tb_tipostatus.query.order_by('desc_tipostatus')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')
+
+##################################################################################################################################
+#PERGUNTA
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: pergunta
+#TIPO: edição
+#TABELA: tb_pergunta
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioPerguntaEdicao(FlaskForm):
+    desc = TextAreaField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={"placeholder": "digite a descrição da pergunta"})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    salvar = SubmitField('Salvar') 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: pesquisa
+#TIPO: visualização
+#TABELA: tb_pergunta
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioPerguntaVisualizar(FlaskForm):
+    desc = TextAreaField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')
