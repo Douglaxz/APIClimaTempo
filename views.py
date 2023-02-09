@@ -6,7 +6,8 @@ from datetime import date, timedelta
 from quizcreator import app, db
 from models import tb_user,\
     tb_usertype,\
-    tb_tipostatus
+    tb_tipostatus,\
+    tb_pesquisa
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -15,7 +16,9 @@ from helpers import \
     FormularioTipoUsuarioEdicao,\
     FormularioTipoUsuarioVisualizar,\
     FormularioTipoStatusEdicao,\
-    FormularioTipoStatusVisualizar    
+    FormularioTipoStatusVisualizar,\
+    FormularioPesquisaEdicao,\
+    FormularioPesquisaVisualizar
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -549,119 +552,133 @@ def atualizarTipoStatus():
 ##################################################################################################################################
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: status
-#FUNÇÃO: tela do sistema para mostrar os tipos de status de pesquisa cadastrados
+#ROTA: pesquisa
+#FUNÇÃO: tela do sistema para mostrar as pesquisa cadastradas
 #PODE ACESSAR: usuários do tipo administrador
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/tipostatus', methods=['POST','GET'])
-def tipostatus():
+@app.route('/pesquisa', methods=['POST','GET'])
+def pesquisa():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('tipostatus')))         
+        return redirect(url_for('login',proxima=url_for('pesquisa')))         
     page = request.args.get('page', 1, type=int)
     form = FormularPesquisa()   
     pesquisa = form.pesquisa.data
     if pesquisa == "":
         pesquisa = form.pesquisa_responsiva.data
     if pesquisa == "" or pesquisa == None:     
-        tiposstatus = tb_tipostatus.query.order_by(tb_tipostatus.desc_tipostatus)\
+        pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
+        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_status)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus)\
+        .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
-        tiposstatus = tb_usertype.query.order_by(tb_tipostatus.desc_tipostatus)\
-        .filter(tb_usertype.desc_tipostatus.ilike(f'%{pesquisa}%'))\
+        pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
+        .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_status)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus)\
+        .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
+        .filter(tb_pesquisa.nome_pesquisa.ilike(f'%{pesquisa}%'))\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
-    return render_template('tipostatus.html', titulo='Tipo Status', tiposstatus=tiposstatus, form=form)
+    return render_template('tipostatus.html', titulo='Tipo Status', pesquisas=pesquisas, form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: novoTipoStatus
-#FUNÇÃO: mostrar o formulário de cadastro de tipo de status
-#PODE ACESSAR: usuários do tipo administrador
+#ROTA: novoPesquisa
+#FUNÇÃO: mostrar o formulário de cadastro de pesquisa
+#PODE ACESSAR: todos
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/novoTipoStatus')
-def novoTipoStatus():
+@app.route('/novoPesquisa')
+def novoPesquisa():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('novoTipoStatus'))) 
-    form = FormularioTipoStatusEdicao()
-    return render_template('novoTipoStatus.html', titulo='Novo Tipo Status', form=form)
+        return redirect(url_for('login',proxima=url_for('novoPesquisa'))) 
+    form = FormularioPesquisaEdicao()
+    return render_template('novoPesquisa.html', titulo='Nova Pesquisa', form=form)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: criarTipoStatus
-#FUNÇÃO: inserir informações do tipo de statys no banco de dados
+#ROTA: criarPesquisa
+#FUNÇÃO: inserir informações de pesquisa no banco de dados
 #PODE ACESSAR: usuários do tipo administrador
 #--------------------------------------------------------------------------------------------------------------------------------- 
-@app.route('/criarTipoStatus', methods=['POST',])
-def criarTipoStatus():
+@app.route('/criarPesquisa', methods=['POST',])
+def criarPesquisa():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('criarTipoStatus')))     
-    form = FormularioTipoStatusEdicao(request.form)
+        return redirect(url_for('login',proxima=url_for('criarPesquisa')))     
+    form = FormularioPesquisaEdicao(request.form)
     if not form.validate_on_submit():
         flash('Por favor, preencha todos os dados','danger')
-        return redirect(url_for('criarTipoStatus'))
+        return redirect(url_for('criarPesquisa'))
     desc  = form.descricao.data
+    nome  = form.nome.data
     status = form.status.data
-    tipoustatus = tb_tipostatus.query.filter_by(desc_tipostatus=desc).first()
-    if tipoustatus:
-        flash ('Tipo status já existe','danger')
-        return redirect(url_for('tipousuario')) 
-    novoTipoStatus = tb_tipostatus(desc_tipostatus=desc, status_tipostatus=status)
-    flash('Tipo de status criado com sucesso!','success')
-    db.session.add(novoTipoStatus)
+    codext = form.codext.data
+    pesquisa = tb_pesquisa.query.filter_by(nome_pesquisa=desc).first()
+    if pesquisa:
+        flash ('Pesquisa já existe','danger')
+        return redirect(url_for('pesquisa')) 
+    novoPesquisa = tb_pesquisa(desc_pesquisa=desc, status_pesquisa=status, nome_pesquisa=nome, codext_pesquisa=codext)
+    flash('Pesquisa criada com sucesso!','success')
+    db.session.add(novoPesquisa)
     db.session.commit()
-    return redirect(url_for('tipostatus'))
+    return redirect(url_for('pesquisa'))
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: visualizarTipoStatus
-#FUNÇÃO: mostrar formulário de visualização dos tipos de status cadastrados
-#PODE ACESSAR: usuários do tipo administrador
+#ROTA: visualizarPesquisa
+#FUNÇÃO: mostrar formulário de visualização das pesquisas cadastradas
+#PODE ACESSAR: todos
 #--------------------------------------------------------------------------------------------------------------------------------- 
-@app.route('/visualizarTipoStatus/<int:id>')
-def visualizarTipoStatus(id):
+@app.route('/visualizarPesquisa/<int:id>')
+def visualizarPesquisa(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('visualizarTipoStatus')))  
-    tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
-    form = FormularioTipoStatusVisualizar()
-    form.descricao.data = tipostatus.desc_tipostatus
-    form.status.data = tipostatus.status_tipostatus
-    return render_template('visualizarTipoStatus.html', titulo='Visualizar Tipo Status', id=id, form=form)   
+        return redirect(url_for('login',proxima=url_for('visualizarPesquisa')))  
+    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
+    form = FormularioPesquisaVisualizar()
+    form.descricao.data = pesquisa.desc_pesquisa
+    form.status.data = pesquisa.status_pesquisa
+    form.nome.data = pesquisa.nome_pesquisa
+    form.codext.data = pesquisa.codext_pesquisa
+    return render_template('visualizarPesquisa.html', titulo='Visualizar Pesquisa', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: editarTipoUsuario
-##FUNÇÃO: mostrar formulário de edição dos tipos de usuários cadastrados
-#PODE ACESSAR: usuários do tipo administrador
+#ROTA: editarPesquisa
+##FUNÇÃO: mostrar formulário de edição das pesquisas cadastradas
+#PODE ACESSAR: todos
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/editarTipoStatus/<int:id>')
-def editarTipoStatus(id):
+@app.route('/editarPesquisa/<int:id>')
+def editarPesquisa(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('editarTipoStatus')))  
-    tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=id).first()
-    form = FormularioTipoStatusEdicao()
-    form.descricao.data = tipostatus.desc_tipostatus
-    form.status.data = tipostatus.status_tipostatus
-    return render_template('editarTipoStatus.html', titulo='Editar Tipo Status', id=id, form=form)   
+        return redirect(url_for('login',proxima=url_for('editarPesquisa')))  
+    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
+    form = FormularioPesquisaEdicao()
+    form.descricao.data = pesquisa.desc_pesquisa
+    form.status.data = pesquisa.status_pesquisa
+    form.nome.data = pesquisa.nome_pesquisa
+    form.codext.data = pesquisa.codext_pesquisa
+    return render_template('editarPesquisa.html', titulo='Editar Pesquisa', id=id, form=form)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: atualizarTipoUsuario
-#FUNÇÃO: alterar as informações dos tipos de usuários no banco de dados
-#PODE ACESSAR: usuários do tipo administrador
+#ROTA: atualizarPesquisa
+#FUNÇÃO: alterar as informações de pesquisa no banco de dados
+#PODE ACESSAR: todos
 #---------------------------------------------------------------------------------------------------------------------------------
-@app.route('/atualizarTipoStatus', methods=['POST',])
-def atualizarTipoStatus():
+@app.route('/atualizarPesquisa', methods=['POST',])
+def atualizarPesquisa():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
-        return redirect(url_for('login',proxima=url_for('atualizarTipoStatus')))      
-    form = FormularioTipoStatusEdicao(request.form)
+        return redirect(url_for('login',proxima=url_for('atualizarPesquisa')))      
+    form = FormularioPesquisaEdicao(request.form)
     if form.validate_on_submit():
         id = request.form['id']
-        tipostatus = tb_tipostatus.query.filter_by(cod_tipostatus=request.form['id']).first()
-        tipostatus.desc_tipostatus = form.descricao.data
-        tipostatus.status_tipostatus = form.status.data
-        db.session.add(tipostatus)
+        pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=request.form['id']).first()
+        pesquisa.desc_pesquisa = form.descricao.data
+        pesquisa.status_pesquisa = form.status.data
+        pesquisa.nome_pesquisa = form.nome.data
+        pesquisa.codext_pesquisa = form.codext.data
+        db.session.add(pesquisa)
         db.session.commit()
-        flash('Tipo de status atualizado com sucesso!','success')
+        flash('Pesquisa atualizado com sucesso!','success')
     else:
         flash('Favor verificar os campos!','danger')
-    return redirect(url_for('visualizarTipoStatus', id=request.form['id']))    
+    return redirect(url_for('visualizarPesquisa', id=request.form['id']))    

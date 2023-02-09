@@ -1,7 +1,7 @@
 #importações
 import os
 from quizcreator import app, db
-from models import tb_user, tb_usertype
+from models import tb_user, tb_usertype, tb_tipostatus
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, validators, SubmitField,IntegerField, SelectField,PasswordField,DateField,EmailField,BooleanField,RadioField, TextAreaField, TimeField, TelField, DateTimeLocalField
 
@@ -108,3 +108,32 @@ class FormularioTipoStatusVisualizar(FlaskForm):
     descricao = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')    
+
+##################################################################################################################################
+#PESQUISA
+##################################################################################################################################
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: pesquisa
+#TIPO: edição
+#TABELA: tb_pesquisa
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioPesquisaEdicao(FlaskForm):
+    nome = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    codext = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={"placeholder": "digite a descrição do tipo de status"})
+    status = SelectField('Situação:', coerce=int,  choices=[(g.cod_tipostatus, g.desc_tipostatus) for g in tb_tipostatus.query.order_by('desc_tipostatus')])
+    salvar = SubmitField('Salvar')    
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: pesquisa
+#TIPO: visualização
+#TABELA: tb_ustb_pesquisaertype
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioPesquisaVisualizar(FlaskForm):
+    nome = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    codext = StringField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int,  choices=[(g.cod_tipostatus, g.desc_tipostatus) for g in tb_tipostatus.query.order_by('desc_tipostatus')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')
