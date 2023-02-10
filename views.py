@@ -24,7 +24,8 @@ from helpers import \
     FormularioPerguntaEdicao,\
     FormularioPerguntaVisualizar,\
     FormularioRespostaEdicao,\
-    FormularioRespostaVisualizar
+    FormularioRespostaVisualizar,\
+    FormularioResponderPesquisa
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -924,5 +925,25 @@ def atualizarResposta(id,idpergunta,idresposta):
 #---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/responderPesquisa/<int:id>')
 def responderPesquisa(id):
-    form = FormularioRespostaEdicao()
+    form = FormularioResponderPesquisa()
+    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
+    form.nome.data = pesquisa.nome_pesquisa
+    form.desc.data = pesquisa.desc_pesquisa
     return render_template('respondendoPesquisa.html', titulo='Preenchimento de pesquisa', form=form, id=id)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: responderPergunta
+#FUNÇÃO: mostrar o formulário de resposta da pergunta
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/responderPergunta/<int:id><int:numeropergunta>', methods=['POST','GET'])
+def responderPergunta(id,numeropergunta):
+    form = FormularioResponderPesquisa()
+    perguntas = tb_pergunta.query.filter_by(cod_pesquisa=id)
+    rows = (perguntas.count())
+    for pergunta in perguntas:
+        form.pergunta.data = pergunta.desc_pergunta
+        form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]       
+    #falta ver qual pergunta foi e qual não foi
+
+    return render_template('respondendoPergunta.html', titulo='Preenchimento de resposta', form=form, id=id)    
