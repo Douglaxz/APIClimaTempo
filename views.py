@@ -760,5 +760,34 @@ def visualizarPergunta(id,idpergunta):
 #--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/editarPergunta/<int:id><int:idpergunta>')
 def editarPergunta(id,idpergunta):
-    pass
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarPergunta')))  
+    pergunta = tb_pergunta.query.filter_by(cod_pergunta=idpergunta).first()
+    form = FormularioPerguntaEdicao()
+    form.desc.data = pergunta.desc_pergunta
+    form.status.data = pergunta.status_pergunta
+    return render_template('editarPergunta.html', titulo='Editar Pergunta', id=id, form=form, idpergunta=idpergunta)   
  
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarPergunda
+#FUNÇÃO: alterar as informações de pergunta no banco de dados
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarPergunta/<int:id><int:idpergunta>', methods=['POST',])
+def atualizarPergunta(id,idpergunta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarPergunta')))      
+    form = FormularioPerguntaEdicao(request.form)
+    if form.validate_on_submit():
+        idpergunta = request.form['id']
+        pergunta = tb_pergunta.query.filter_by(cod_pergunta=idpergunta).first()
+        pergunta.desc_pergunta = form.desc.data
+        pergunta.cod_tipostatus = form.status.data
+        db.session.add(pergunta)
+        db.session.commit()
+        flash('Pergunta atualizada com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarPergunta', id=id, idpergunta=idpergunta)) 
