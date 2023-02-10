@@ -643,7 +643,7 @@ def visualizarPesquisa(id):
     form.nome.data = pesquisa.nome_pesquisa
     form.codext.data = pesquisa.codext_pesquisa
     page = request.args.get('page', 1, type=int)
-    perguntas = tb_pergunta.query.order_by(tb_pergunta.desc_pergunta)\
+    perguntas = tb_pergunta.query.order_by(tb_pergunta.ordem_pergunta)\
         .filter(tb_pergunta.cod_pesquisa == id)\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)   
 
@@ -726,12 +726,13 @@ def criarPergunta():
     id = request.form['id']
     desc  = form.desc.data
     status = form.status.data
+    ordem = form.ordem.data
     cod_pesquisa = id
     pergunta = tb_pergunta.query.filter_by(desc_pergunta=desc).first()
     if pergunta:
         flash ('Pergunta já existe','danger')
         return redirect(url_for('pesquisa')) 
-    novoPergunta = tb_pergunta(desc_pergunta=desc, status_pergunta=status, cod_pesquisa=cod_pesquisa)
+    novoPergunta = tb_pergunta(desc_pergunta=desc, status_pergunta=status, cod_pesquisa=cod_pesquisa, ordem_pergunta=ordem)
     flash('Pergunta criada com sucesso!','success')
     db.session.add(novoPergunta)
     db.session.commit()
@@ -751,6 +752,7 @@ def visualizarPergunta(id,idpergunta):
     form = FormularioPerguntaVisualizar()
     form.desc.data = pergunta.desc_pergunta
     form.status.data = pergunta.status_pergunta
+    form.ordem.data = pergunta.ordem_pergunta
     return render_template('visualizarPergunta.html', titulo='Visualizar Pergunta', id=id, form=form, idpergunta=idpergunta)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -767,6 +769,7 @@ def editarPergunta(id,idpergunta):
     form = FormularioPerguntaEdicao()
     form.desc.data = pergunta.desc_pergunta
     form.status.data = pergunta.status_pergunta
+    form.ordem.data = pergunta.ordem_pergunta
     return render_template('editarPergunta.html', titulo='Editar Pergunta', id=id, form=form, idpergunta=idpergunta)   
  
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -785,6 +788,7 @@ def atualizarPergunta(id,idpergunta):
         pergunta = tb_pergunta.query.filter_by(cod_pergunta=idpergunta).first()
         pergunta.desc_pergunta = form.desc.data
         pergunta.cod_tipostatus = form.status.data
+        pergunta.ordem_pergunta = form.ordem.data
         db.session.add(pergunta)
         db.session.commit()
         flash('Pergunta atualizada com sucesso!','success')

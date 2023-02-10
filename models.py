@@ -45,6 +45,7 @@ class tb_pergunta(db.Model):
     cod_pergunta = db.Column(db.Integer, primary_key=True, autoincrement=True)
     desc_pergunta = db.Column(db.String(200), nullable=False)
     status_pergunta = db.Column(db.Integer, nullable=False)
+    ordem_pergunta = db.Column(db.Integer, nullable=False)
     cod_pesquisa = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.name    

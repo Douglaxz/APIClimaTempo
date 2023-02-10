@@ -148,6 +148,7 @@ class FormularioPesquisaVisualizar(FlaskForm):
 class FormularioPerguntaEdicao(FlaskForm):
     desc = TextAreaField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={"placeholder": "digite a descrição da pergunta"})
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    ordem = IntegerField('Ordem:', [validators.DataRequired()])
     salvar = SubmitField('Salvar') 
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -158,4 +159,5 @@ class FormularioPerguntaEdicao(FlaskForm):
 class FormularioPerguntaVisualizar(FlaskForm):
     desc = TextAreaField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    ordem = IntegerField('Ordem:', [validators.DataRequired()], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')
