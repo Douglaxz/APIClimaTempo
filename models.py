@@ -50,3 +50,13 @@ class tb_pergunta(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name    
 
+# criação da classe pergunta conectada com o banco de dados mysql
+class tb_resposta(db.Model):
+    cod_resposta = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    desc_resposta = db.Column(db.String(200), nullable=False)
+    status_resposta = db.Column(db.Integer, nullable=False)
+    certa_resposta = db.Column(db.Integer, nullable=False)
+    cod_pergunta = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name 
+

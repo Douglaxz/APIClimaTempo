@@ -161,3 +161,28 @@ class FormularioPerguntaVisualizar(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     ordem = IntegerField('Ordem:', [validators.DataRequired()], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')
+
+##################################################################################################################################
+#RESPOSTA
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: resposta
+#TIPO: edição
+#TABELA: tb_resposta
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioRespostaEdicao(FlaskForm):
+    desc = StringField('Resposta:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={"placeholder": "digite a descrição da resposta"})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')])
+    certa = SelectField('Correta:', coerce=int, choices=[(0, 'Não'),(1, 'Sim')])
+    salvar = SubmitField('Salvar') 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: pesquisa
+#TIPO: visualização
+#TABELA: tb_pergunta
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioRespostaVisualizar(FlaskForm):
+    desc = StringField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+    status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
+    certa = SelectField('Certa:', coerce=int, choices=[(0, 'Não'),(1, 'Sim')], render_kw={'readonly': True})
+    salvar = SubmitField('Salvar')

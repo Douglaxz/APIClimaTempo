@@ -8,7 +8,8 @@ from models import tb_user,\
     tb_usertype,\
     tb_tipostatus,\
     tb_pesquisa,\
-    tb_pergunta
+    tb_pergunta,\
+    tb_resposta
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -21,7 +22,9 @@ from helpers import \
     FormularioPesquisaEdicao,\
     FormularioPesquisaVisualizar,\
     FormularioPerguntaEdicao,\
-    FormularioPerguntaVisualizar
+    FormularioPerguntaVisualizar,\
+    FormularioRespostaEdicao,\
+    FormularioRespostaVisualizar
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -710,8 +713,8 @@ def novoPergunta(id):
     return render_template('novoPergunta.html', titulo='Nova Pergunta', form=form, id=id)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-#ROTA: criarPesquisa
-#FUNÇÃO: inserir informações de pesquisa no banco de dados
+#ROTA: criarPergunta
+#FUNÇÃO: inserir informações de pergunta no banco de dados
 #PODE ACESSAR: usuários do tipo administrador
 #--------------------------------------------------------------------------------------------------------------------------------- 
 @app.route('/criarPergunta', methods=['POST',])
@@ -728,7 +731,8 @@ def criarPergunta():
     status = form.status.data
     ordem = form.ordem.data
     cod_pesquisa = id
-    pergunta = tb_pergunta.query.filter_by(desc_pergunta=desc).first()
+    pergunta = tb_pergunta.query.filter_by(desc_pergunta=desc).first()\
+            .filter(tb_pergunta.cod_pesquisa == id)
     if pergunta:
         flash ('Pergunta já existe','danger')
         return redirect(url_for('pesquisa')) 
@@ -749,11 +753,17 @@ def visualizarPergunta(id,idpergunta):
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('visualizarPergunta')))  
     pergunta = tb_pergunta.query.filter_by(cod_pergunta=idpergunta).first()
+    page = request.args.get('page', 1, type=int)
     form = FormularioPerguntaVisualizar()
     form.desc.data = pergunta.desc_pergunta
     form.status.data = pergunta.status_pergunta
     form.ordem.data = pergunta.ordem_pergunta
-    return render_template('visualizarPergunta.html', titulo='Visualizar Pergunta', id=id, form=form, idpergunta=idpergunta)   
+
+    respostas = tb_resposta.query.order_by(tb_resposta.desc_resposta)\
+        .filter(tb_resposta.cod_pergunta == idpergunta)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)       
+    
+    return render_template('visualizarPergunta.html', titulo='Visualizar Pergunta', id=id, form=form, idpergunta=idpergunta,respostas=respostas)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: editarPergunta
@@ -795,3 +805,109 @@ def atualizarPergunta(id,idpergunta):
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarPergunta', id=id, idpergunta=idpergunta)) 
+
+##################################################################################################################################
+#RESPOSTAS
+################################################################################################################################## 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: novoResposta
+#FUNÇÃO: mostrar o formulário de cadastro de resposta
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/novoResposta/<int:id><int:idpergunta>')
+def novoResposta(id,idpergunta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('novoPergunta'))) 
+    form = FormularioRespostaEdicao()
+    return render_template('novoResposta.html', titulo='Nova Resposta', form=form, id=id, idpergunta=idpergunta)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: criarResposta
+#FUNÇÃO: inserir informações de resposta no banco de dados
+#PODE ACESSAR: todos
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/criarResposta/<int:id><int:idpergunta>', methods=['POST',])
+def criarResposta(id,idpergunta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('criarResposta')))     
+    form = FormularioRespostaEdicao(request.form)
+    if not form.validate_on_submit():
+        flash('Por favor, preencha todos os dados','danger')
+        return redirect(url_for('criarResposta'))
+    idpergunta = request.form['id']
+    desc  = form.desc.data
+    status = form.status.data
+    certa = form.certa.data
+    cod_pesquisa = id
+    resposta = tb_resposta.query.filter_by(desc_resposta=desc).first()\
+            .filter(tb_resposta.cod_pergunta == idpergunta)
+    if resposta:
+        flash ('Resposta já existe','danger')
+        return redirect(url_for('visualizarPergunta',id=id,idpergunta=idpergunta)) 
+    novoResposta = tb_resposta(desc_resposta=desc, status_resposta=status, cod_pergunta=idpergunta, certa_resposta=certa)
+    flash('Resposta criada com sucesso!','success')
+    db.session.add(novoResposta)
+    db.session.commit()
+    return redirect(url_for('visualizarPergunta', id=id, idpergunta=idpergunta))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarResposta
+#FUNÇÃO: visualizar informações de resposta no banco de dados
+#PODE ACESSAR: todos
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarResposta/<int:id><int:idpergunta><int:idresposta>')
+def visualizarResposta(id,idpergunta,idresposta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarPergunta')))  
+    resposta = tb_resposta.query.filter_by(cod_resposta=idresposta).first()
+    page = request.args.get('page', 1, type=int)
+    form = FormularioRespostaVisualizar()
+    form.desc.data = resposta.desc_resposta
+    form.status.data = resposta.status_resposta
+    form.certa.data = resposta.certa_resposta   
+    
+    return render_template('visualizarResposta.html', titulo='Visualizar Resposta', id=id, form=form, idpergunta=idpergunta,idresposta=idresposta) 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarResposta
+#FUNÇÃO: editar informações de resposta no banco de dados
+#PODE ACESSAR: todos
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/editarResposta/<int:id><int:idpergunta><int:idresposta>')
+def editarResposta(id,idpergunta,idresposta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('editarPergunta')))  
+    resposta = tb_resposta.query.filter_by(cod_resposta=idresposta).first()
+    form = FormularioRespostaEdicao()
+    form.desc.data = resposta.desc_resposta
+    form.status.data = resposta.status_resposta
+    form.certa.data = resposta.certa_resposta
+    return render_template('editarResposta.html', titulo='Editar Resposta', id=id, form=form, idpergunta=idpergunta,idresposta=idresposta)  
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: atualizarResposta
+#FUNÇÃO: alterar as informações de resposta no banco de dados
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/atualizarResposta/<int:id><int:idpergunta><int:idresposta>', methods=['POST',])
+def atualizarResposta(id,idpergunta,idresposta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('atualizarResposta')))      
+    form = FormularioRespostaEdicao(request.form)
+    if form.validate_on_submit():
+        idresposta = request.form['id']
+        resposta = tb_resposta.query.filter_by(cod_resposta=idresposta).first()
+        resposta.desc_resposta = form.desc.data
+        resposta.status_resposta = form.status.data
+        resposta.certa_resposta = form.certa.data
+        db.session.add(resposta)
+        db.session.commit()
+        flash('Resposta atualizada com sucesso!','success')
+    else:
+        flash('Favor verificar os campos!','danger')
+    return redirect(url_for('visualizarResposta', id=id, idpergunta=idpergunta, idresposta=idresposta)) 
