@@ -56,7 +56,7 @@
                 <a class="btn" href="{{url_for('visualizarPesquisa',id=pesquisa.cod_pesquisa)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
               </td>
               <td valing="midle">
-                <a class="btn" href="{{url_for('visualizarPesquisa',id=pesquisa.cod_pesquisa)}}"><i class="bi bi-play-circle" style="font-size:1.5rem; color:black;"></i></a>
+                <a class="btn" target="_blank" href="{{url_for('responderPesquisa',id=pesquisa.cod_pesquisa)}}"><i class="bi bi-play-circle" style="font-size:1.5rem; color:black;"></i></a>
               </td>                             
             </tr>
             {% endfor %}
