@@ -642,7 +642,13 @@ def visualizarPesquisa(id):
     form.status.data = pesquisa.cod_tipostatus
     form.nome.data = pesquisa.nome_pesquisa
     form.codext.data = pesquisa.codext_pesquisa
-    return render_template('visualizarPesquisa.html', titulo='Visualizar Pesquisa', id=id, form=form)   
+    page = request.args.get('page', 1, type=int)
+    perguntas = tb_pergunta.query.order_by(tb_pergunta.desc_pergunta)\
+        .filter(tb_pergunta.cod_pesquisa == id)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)   
+
+
+    return render_template('visualizarPesquisa.html', titulo='Visualizar Pesquisa', id=id, form=form, perguntas=perguntas)   
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: editarPesquisa
@@ -730,3 +736,29 @@ def criarPergunta():
     db.session.add(novoPergunta)
     db.session.commit()
     return redirect(url_for('visualizarPesquisa', id=id))
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: visualizarPergunta
+#FUNÇÃO: visualizar informações de pergunta no banco de dados
+#PODE ACESSAR: todos
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/visualizarPergunta/<int:id><int:idpergunta>')
+def visualizarPergunta(id,idpergunta):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('visualizarPergunta')))  
+    pergunta = tb_pergunta.query.filter_by(cod_pergunta=idpergunta).first()
+    form = FormularioPerguntaVisualizar()
+    form.desc.data = pergunta.desc_pergunta
+    form.status.data = pergunta.status_pergunta
+    return render_template('visualizarPergunta.html', titulo='Visualizar Pergunta', id=id, form=form, idpergunta=idpergunta)   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: editarPergunta
+#FUNÇÃO: editar informações de pergunta no banco de dados
+#PODE ACESSAR: todos
+#--------------------------------------------------------------------------------------------------------------------------------- 
+@app.route('/editarPergunta/<int:id><int:idpergunta>')
+def editarPergunta(id,idpergunta):
+    pass
+ 

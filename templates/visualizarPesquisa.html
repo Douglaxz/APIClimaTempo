@@ -33,4 +33,35 @@
     <a class="btn btn_titulo" href="{{url_for('novoPergunta',id=id)}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
+
+<div class="boxcentral">
+  <table class="table table-bordered table-responsiv table-hover">
+      <thead>
+        <tr>
+          <th width="80%">Pergunta</th>
+          <th width="10%">Status</th>
+          <th width="10%">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for pergunta in perguntas.items %}
+          <tr>
+              <td>
+                {{ pergunta.desc_pergunta }}
+              </td>
+              <td>
+                {% if(pergunta.status_pergunta == 0): %}
+                  <i class="btn bi bi-toggle-on text-success" style="font-size:2rem; color:white;">
+                {% else %}
+                  <i class="btn bi bi-toggle-off text-danger" style="font-size:2rem; color:white;">
+                {% endif %}                       
+              </td>
+              <td valing="midle">
+                <a class="btn" href="{{url_for('visualizarPergunta',idpergunta=pergunta.cod_pergunta, id=id)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
+            </td>              
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
 {% endblock%}
