@@ -841,9 +841,11 @@ def criarResposta(id,idpergunta):
     status = form.status.data
     certa = form.certa.data
     cod_pesquisa = id
-    resposta = tb_resposta.query.filter_by(desc_resposta=desc).first()\
-            .filter(tb_resposta.cod_pergunta == idpergunta)
-    if resposta:
+    resposta = tb_resposta.query.order_by(tb_resposta.desc_resposta)\
+        .filter(tb_resposta.desc_resposta == desc)\
+        .filter(tb_resposta.cod_pergunta==idpergunta)
+    rows = (resposta.count())
+    if rows != 0 :
         flash ('Resposta já existe','danger')
         return redirect(url_for('visualizarPergunta',id=id,idpergunta=idpergunta)) 
     novoResposta = tb_resposta(desc_resposta=desc, status_resposta=status, cod_pergunta=idpergunta, certa_resposta=certa)
@@ -911,3 +913,16 @@ def atualizarResposta(id,idpergunta,idresposta):
     else:
         flash('Favor verificar os campos!','danger')
     return redirect(url_for('visualizarResposta', id=id, idpergunta=idpergunta, idresposta=idresposta)) 
+
+##################################################################################################################################
+#RESPONDER PESQUISA
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: responderPesquisa
+#FUNÇÃO: mostrar o formulário de resposta da pesquisa
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/responderPesquisa/<int:id>')
+def responderPesquisa(id):
+    form = FormularioRespostaEdicao()
+    return render_template('respondendoPesquisa.html', titulo='Preenchimento de pesquisa', form=form, id=id)

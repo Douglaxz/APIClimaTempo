@@ -27,12 +27,12 @@
   <table class="table table-bordered table-responsiv table-hover">
       <thead>
         <tr>
-          <th width="60%">Nome</th>
-          <th width="30%">Status</th>
-          <th width="10%">Ações</th>
+          <th width="80%">Nome</th>
+          <th width="10%">Status</th>
+          <th width="10%" colspan="2" align="ce">Ações</th>
         </tr>
       </thead>
-      <tbody>
+        <tbody>
           {% for pesquisa in pesquisas.items %}
           <tr>
               <td>
@@ -40,35 +40,26 @@
               </td>
               <td>
                 {% if(pesquisa.cod_tipostatus == 1): %}
-                  <i class="btn bi bi-circle-fill" style="font-size:2rem; color:orangered;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
+                  <i class="btn bi bi-circle-fill" style="font-size:1.5rem; color:orangered;"></i>
                 {% endif %}
                 {% if(pesquisa.cod_tipostatus == 2): %}
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle-fill" style="font-size:2rem; color:green;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
+                  <i class="btn bi bi-circle-fill" style="font-size:1.5rem; color:green;"></i>
                 {% endif %}     
                 {% if(pesquisa.cod_tipostatus == 3): %}
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle-fill" style="font-size:2rem; color:blue;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
+                  <i class="btn bi bi-circle-fill" style="font-size:1.5rem; color:blue;"></i>
                 {% endif %}
                 {% if(pesquisa.cod_tipostatus == 4): %}
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle" style="font-size:2rem; color:black;"></i>
-                  <i class="btn bi bi-circle-fill" style="font-size:2rem; color:red;"></i>
+                  <i class="btn bi bi-circle-fill" style="font-size:1.5rem; color:red;"></i>
                 {% endif %}                                                                   
               </td>
               <td valing="midle">
                 <a class="btn" href="{{url_for('visualizarPesquisa',id=pesquisa.cod_pesquisa)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
-            </td>              
-          </tr>
-          {% endfor %}
+              </td>
+              <td valing="midle">
+                <a class="btn" href="{{url_for('visualizarPesquisa',id=pesquisa.cod_pesquisa)}}"><i class="bi bi-play-circle" style="font-size:1.5rem; color:black;"></i></a>
+              </td>                             
+            </tr>
+            {% endfor %}
       </tbody>
   </table>
 </div>

@@ -186,3 +186,16 @@ class FormularioRespostaVisualizar(FlaskForm):
     status = SelectField('Situação:', coerce=int, choices=[(0, 'Ativo'),(1, 'Inativo')], render_kw={'readonly': True})
     certa = SelectField('Certa:', coerce=int, choices=[(0, 'Não'),(1, 'Sim')], render_kw={'readonly': True})
     salvar = SubmitField('Salvar')
+
+##################################################################################################################################
+#RESPONDENDO A PESQUISA
+##################################################################################################################################
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: respondendo a pesquisa
+#TIPO: edição
+#TABELA: tb_?????
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioResponderPesquisa(FlaskForm):
+    nome = StringField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = EmailField('Pergunta:', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    salvar = SubmitField('Salvar')
