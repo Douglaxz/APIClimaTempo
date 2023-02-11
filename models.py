@@ -60,3 +60,12 @@ class tb_resposta(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name 
 
+# criação da classe respostauser conectada com o banco de dados mysql
+class tb_respostauser(db.Model):
+    cod_respostauser = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cod_pesquisa = db.Column(db.Integer, nullable=False)
+    cod_pergunta = db.Column(db.Integer, nullable=False)
+    cod_user = db.Column(db.Integer, nullable=False)
+    cod_resposta = db.Column(db.Integer, nullable=False)
+    def __repr__(self):
+        return '<Name %r>' % self.name 

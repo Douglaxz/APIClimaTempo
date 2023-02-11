@@ -9,7 +9,8 @@ from models import tb_user,\
     tb_tipostatus,\
     tb_pesquisa,\
     tb_pergunta,\
-    tb_resposta
+    tb_resposta,\
+    tb_respostauser
 from helpers import \
     FormularPesquisa, \
     FormularioUsuarioTrocarSenha,\
@@ -953,6 +954,15 @@ def responderPergunta(id,numeropergunta):
     form.pergunta.data = pergunta.desc_pergunta
     form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
     
-    numeropergunta = numeropergunta + 1
+    if numeropergunta != 0:
+        respostauser = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
+            .filter(tb_respostauser.cod_user == session['coduser_logado'])\
+            .filter(tb_respostauser.cod_pergunta==[numeropergunta-1])
+        rows = (resposta.count())
+        #se não tiver, salva na tabela
 
+
+
+    numeropergunta = numeropergunta + 1
+    #verificar se acabaram as perguntas e se acabou mandar pra pagina de resumo final
     return render_template('respondendoPergunta.html', titulo=pesquisa.nome_pesquisa, form=form, id=id,numeropergunta=numeropergunta)    
