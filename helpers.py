@@ -195,8 +195,8 @@ class FormularioRespostaVisualizar(FlaskForm):
 #TIPO: edição
 #TABELA: tb_?????
 #---------------------------------------------------------------------------------------------------------------------------------
-class FormularioResponderPesquisa(FlaskForm):
-    nome = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
+class FormularioResponderPesquisaInicio(FlaskForm):
+    nome = StringField('Titulo:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     desc = TextAreaField('Descrição:', [validators.DataRequired(), validators.Length(min=1, max=500)], render_kw={'readonly': True})
     nomeusuario = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)])
     emailusuario = EmailField('Email:', [validators.DataRequired(), validators.Length(min=1, max=50)])
@@ -209,5 +209,5 @@ class FormularioResponderPesquisa(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioResponderPesquisa(FlaskForm):
     pergunta = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
-    opcoes = RadioField('Label', choices=[])
+    opcoes = RadioField('Respostas', choices=[])
     salvar = SubmitField('Salvar')

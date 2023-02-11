@@ -25,7 +25,8 @@ from helpers import \
     FormularioPerguntaVisualizar,\
     FormularioRespostaEdicao,\
     FormularioRespostaVisualizar,\
-    FormularioResponderPesquisa
+    FormularioResponderPesquisa,\
+    FormularioResponderPesquisaInicio    
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -925,7 +926,7 @@ def atualizarResposta(id,idpergunta,idresposta):
 #---------------------------------------------------------------------------------------------------------------------------------
 @app.route('/responderPesquisa/<int:id>')
 def responderPesquisa(id):
-    form = FormularioResponderPesquisa()
+    form = FormularioResponderPesquisaInicio()
     pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
     form.nome.data = pesquisa.nome_pesquisa
     form.desc.data = pesquisa.desc_pesquisa
@@ -939,11 +940,19 @@ def responderPesquisa(id):
 @app.route('/responderPergunta/<int:id><int:numeropergunta>', methods=['POST','GET'])
 def responderPergunta(id,numeropergunta):
     form = FormularioResponderPesquisa()
+    perguntasvetor = []
+    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=id).first()
     perguntas = tb_pergunta.query.filter_by(cod_pesquisa=id)
-    rows = (perguntas.count())
+    
+    
     for pergunta in perguntas:
-        form.pergunta.data = pergunta.desc_pergunta
-        form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]       
-    #falta ver qual pergunta foi e qual não foi
+        perguntasvetor.append(pergunta.cod_pergunta)
+               
+    
+    pergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta]).first()
+    form.pergunta.data = pergunta.desc_pergunta
+    form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
+    
+    numeropergunta = numeropergunta + 1
 
-    return render_template('respondendoPergunta.html', titulo='Preenchimento de resposta', form=form, id=id)    
+    return render_template('respondendoPergunta.html', titulo=pesquisa.nome_pesquisa, form=form, id=id,numeropergunta=numeropergunta)    
