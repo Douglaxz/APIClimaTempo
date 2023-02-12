@@ -948,11 +948,12 @@ def responderPergunta(id,numeropergunta):
     
     for pergunta in perguntas:
         perguntasvetor.append(pergunta.cod_pergunta)
-               
-    if numeropergunta > 1 and numeropergunta < len(perguntasvetor):
-        pergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta]).first()
-        form.pergunta.data = pergunta.desc_pergunta
-        form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
+
+    
+        if numeropergunta < len(perguntasvetor):
+            pergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta]).first()
+            form.pergunta.data = pergunta.desc_pergunta
+            form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=pergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
 
     
         respostauser = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
@@ -960,16 +961,45 @@ def responderPergunta(id,numeropergunta):
             .filter(tb_respostauser.cod_pergunta==perguntasvetor[numeropergunta-1])
         rows = (respostauser.count())
         if rows == 0:
-            cod_pesquisa = perguntasvetor[numeropergunta-1]
-            cod_pergunta  = id
+            cod_pesquisa = id
+            cod_pergunta  = perguntasvetor[numeropergunta-1]
             cod_user = session['coduser_logado']
             cod_resposta = form.opcoes.data
             novoRespostaUser = tb_respostauser(cod_pesquisa=cod_pesquisa, cod_pergunta=cod_pergunta, cod_user=cod_user, cod_resposta=cod_resposta)
-            db.session.add(novoRespostaUser)
-            db.session.commit()
+            return str(novoRespostaUser)
+            #db.session.add(novoRespostaUser)
+            #db.session.commit()
 
     numeropergunta = numeropergunta + 1
     if numeropergunta > len(perguntasvetor):
-        return render_template('finalpesquisa.html',id=id, titulo="fim")
+
+        respostas = []
+
+        verificacao = tb_respostauser.query\
+        .join(tb_resposta, tb_resposta.cod_resposta==tb_respostauser.cod_resposta)\
+        .join(tb_pergunta, tb_pergunta.cod_pergunta==tb_respostauser.cod_pergunta)\
+        .add_columns(tb_pergunta.desc_pergunta, tb_respostauser.cod_resposta)\
+        .filter(tb_respostauser.cod_user == session['coduser_logado'])\
+        .order_by(tb_pergunta.ordem_pergunta)
+        rows = (verificacao.count())
+        #return str(rows)
+        
+
+        for resposta in verificacao:
+            
+            resultado = "["
+            resultado = resultado + str(resposta.desc_pergunta)
+            resultado = resultado + "|"
+            resultado = resultado + str(resposta.cod_resposta)
+            resultado = resultado + "|"
+
+
+            resultado = resultado + "]"
+            respostas.append(resultado)
+        
+        #return str(msg)
+
+        
+        return render_template('finalpesquisa.html',id=id, titulo="Resultado da Pesquisa", respostas=respostas)
     else:
         return render_template('respondendoPergunta.html', titulo=pesquisa.nome_pesquisa, form=form, id=id,numeropergunta=numeropergunta)    

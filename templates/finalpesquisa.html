@@ -9,20 +9,30 @@
         <a class="btn btn_titulo" href="#" onclick="myFunction()"><i class="bi bi-arrow-right-circle" style="font-size:1.5rem; color:white;"></i></a>
       </div>
     </div>
-    <div class="boxformulario">
-      <fieldset>
-        <input type="hidden" name="id" id="id" value="{{id}}"
-        <div class="form-group">
-</div> 
-      </fieldset>
-    </div>    
-    <div class="boxformulario">
-      <fieldset>
-        <input type="hidden" name="id" id="id" value="{{id}}">
-   
-        <div class="form-group">
-          
-      </fieldset>
+    <div class="boxcentral">
+      <table class="table table-bordered table-responsiv table-hover">
+          <thead>
+            <tr>
+              <th width="80%">Nome</th>
+              <th width="10%">Status</th>
+              <th width="10%">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for resposta in respostas%}
+              <tr>
+                  <td>
+                    {{ respostas }}
+                  </td>
+                  <td>
+                  </td>
+                  <td valing="midle">
+
+                </td>              
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
     </div>
   </form>
 {% endblock %}
