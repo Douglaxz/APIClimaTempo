@@ -209,5 +209,5 @@ class FormularioResponderPesquisaInicio(FlaskForm):
 #---------------------------------------------------------------------------------------------------------------------------------
 class FormularioResponderPesquisa(FlaskForm):
     pergunta = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
-    opcoes = RadioField('Respostas', choices=[])
+    opcoes = RadioField('Respostas', [validators.DataRequired()], choices=[])
     salvar = SubmitField('Salvar')

@@ -5,10 +5,10 @@
     <i class="bi bi-question-circle" style="font-size:2rem; color:black;" data-toggle="tooltip" data-placement="right" title="Tipo Status"></i> {{ titulo }}
   </div>
   <div class="box_botoes">
-    <a class="btn btn_titulo" href="{{url_for('editarPergunta',id=id, idpergunta=idpergunta)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn_titulo" href="{{url_for('editarPergunta',idpergunta=idpergunta)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
   </div>
   <div class="box_botoes">
-    <a class="btn btn_titulo" href="{{url_for('visualizarPesquisa', id=id)}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn_titulo" href="{{url_for('visualizarPesquisa', idpesquisa=idpesquisa)}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <div class="boxformulario">
@@ -33,7 +33,7 @@
     <i class="bi bi-check-circle" style="font-size:2rem; color:black;" data-toggle="tooltip" data-placement="right" title="Perguntas"></i> Respostas
   </div>
   <div class="box_botoes">
-    <a class="btn btn_titulo" href="{{url_for('novoResposta',id=id, idpergunta=idpergunta)}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn_titulo" href="{{url_for('novoResposta',idpesquisa=idpesquisa, idpergunta=idpergunta)}}"><i class="bi bi-file-earmark-plus" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <div class="boxcentral">
@@ -67,7 +67,7 @@
               {% endif %}                       
             </td>
             <td valing="midle">
-              <a class="btn" href="{{url_for('visualizarResposta',idpergunta=idpergunta, id=id, idresposta=resposta.cod_resposta)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
+              <a class="btn" href="{{url_for('visualizarResposta',idpergunta=idpergunta, idpesquisa=idpesquisa, idresposta=resposta.cod_resposta)}}"><i class="bi bi-eye" style="font-size:1.5rem; color:black;"></i></a>
             </td>              
           </tr>
           {% endfor %}
