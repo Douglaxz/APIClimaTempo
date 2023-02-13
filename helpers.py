@@ -211,3 +211,12 @@ class FormularioResponderPesquisa(FlaskForm):
     pergunta = StringField('Nome:', [validators.DataRequired(), validators.Length(min=1, max=50)], render_kw={'readonly': True})
     opcoes = RadioField('Respostas', [validators.DataRequired()], choices=[])
     salvar = SubmitField('Salvar')
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#FORMUÁRIO: respondendo a pesquisa
+#TIPO: edição
+#TABELA: tb_?????
+#---------------------------------------------------------------------------------------------------------------------------------
+class FormularioResponderOutraPesquisa(FlaskForm):
+    codigo = StringField('Código:', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    salvar = SubmitField('Salvar')

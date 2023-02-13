@@ -27,7 +27,8 @@ from helpers import \
     FormularioRespostaEdicao,\
     FormularioRespostaVisualizar,\
     FormularioResponderPesquisa,\
-    FormularioResponderPesquisaInicio    
+    FormularioResponderPesquisaInicio,\
+    FormularioResponderOutraPesquisa   
 
 # ITENS POR PÁGINA
 from config import ROWS_PER_PAGE, CHAVE
@@ -950,18 +951,14 @@ def responderPergunta():
     form = FormularioResponderPesquisa()
     perguntasvetor = []
     #verificar se a pesquisa existe e pegar infomações de descrição da pesquisa
-    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=idpesquisa).first()
-
-  
+    pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=idpesquisa).first()  
 
     #pegar códigos das peguntas e colocar em um vetor
     perguntas = tb_pergunta.query.filter_by(cod_pesquisa=idpesquisa).order_by(tb_pergunta.ordem_pergunta)   
     for pergunta in perguntas:
         perguntasvetor.append(pergunta.cod_pergunta)
 
-
-    #return str(numeropergunta)
-        #verificar se houve resposta de alguma pergunta
+    #verificar se houve resposta de alguma pergunta
     if numeropergunta > 0:            
         respostauser = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
             .filter(tb_respostauser.cod_user == session['coduser_logado'])\
@@ -973,18 +970,14 @@ def responderPergunta():
             cod_pergunta  = perguntasvetor[numeropergunta-1]
             cod_user = session['coduser_logado']
             cod_resposta = form.opcoes.data
-
             novoRespostaUser = tb_respostauser(cod_pesquisa=cod_pesquisa, cod_pergunta=cod_pergunta, cod_user=cod_user, cod_resposta=cod_resposta)
             db.session.add(novoRespostaUser)
             db.session.commit() 
 
-
     if numeropergunta < len(perguntasvetor):           
         dadospergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta]).first()
         form.pergunta.data = dadospergunta.desc_pergunta
-        form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=dadospergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
-        #redirecionar para o usuário responder
-    
+        form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=dadospergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]   
         numeropergunta = numeropergunta + 1
         return render_template('respondendoPergunta.html',titulo=pesquisa.nome_pesquisa,form=form,idpesquisa=idpesquisa,numeropergunta=numeropergunta)    
     else:
@@ -998,4 +991,43 @@ def responderPergunta():
             .order_by(tb_pergunta.ordem_pergunta)        
         return render_template('finalpesquisa.html',id=id, titulo="Resultado da Pesquisa", dados=verificacao)
 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: responderOutraPergunta
+#FUNÇÃO: mostrar o formulário de entrar com o código de pesquisa de outro usuário
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------        
+@app.route('/responderOutraPergunta')
+def responderOutraPergunta():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('responderOutraPergunta'))) 
+    form = FormularioResponderOutraPesquisa()
+    return render_template('responderOutraPesquisa.html', titulo='Responder nova pesquisa', form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: responderOutraPergunta
+#FUNÇÃO: mostrar o formulário de entrar com o código de pesquisa de outro usuário
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------   
+
+@app.route('/verificarCodigoPesquisa', methods=['POST','GET'])
+def verificarCodigoPesquisa():
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('verificarCodigoPesquisa'))) 
+    form = FormularioResponderOutraPesquisa()
+
+    if form.validate_on_submit():
+        codigo  = form.codigo.data
+        codigo = codigo.upper()        
+        pesquisa = tb_pesquisa.query.filter_by(codext_pesquisa=codigo).first()
+        return redirect(url_for('responderPesquisa',idpesquisa=pesquisa.cod_pesquisa)) 
+    else:
+        flash('Favor verificar os campos!','danger')
+        form = FormularioResponderOutraPesquisa()
+        return render_template('responderOutraPesquisa.html', titulo='Responder nova pesquisa', form=form)
+
+
+
+    
 

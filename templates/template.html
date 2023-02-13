@@ -24,7 +24,7 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
           </li>
-
+          {% if(session['tipousuario_logado'] == 1)%}
           <li class="nav-item dropdown">
             <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Configurações
@@ -35,9 +35,16 @@
               <li><a class="dropdown-item" href="/tipostatus">Tipos de Status</a></li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/pesquisa">Pesquisa</a>
-          </li>            
+          {% endif%}
+          <li class="nav-item dropdown">
+            <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Pesquisas
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="/pesquisa">Minhas Pesquisas</a></li>
+              <li><a class="dropdown-item" href="/responderOutraPergunta">Entrar código</a></li>
+            </ul>
+          </li>        
           <li class="nav-item">
             <a class="nav-link active" href="/editarSenhaUsuario">Trocar Senha</a>
           </li>             
