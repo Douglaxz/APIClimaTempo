@@ -27,9 +27,10 @@
   <table class="table table-bordered table-responsiv table-hover">
       <thead>
         <tr>
-          <th width="80%">Nome</th>
+          <th width="60%">Nome</th>
+          <th width="20%">Código</th>
           <th width="10%">Status</th>
-          <th width="10%" colspan="2" align="ce">Ações</th>
+          <th width="10%" colspan="3" align="center">Ações</th>
         </tr>
       </thead>
         <tbody>
@@ -38,6 +39,9 @@
               <td>
                 {{ pesquisa.nome_pesquisa }}
               </td>
+              <td>
+                {{ pesquisa.codext_pesquisa }}
+              </td>              
               <td>
                 {% if(pesquisa.cod_tipostatus == 1): %}
                   <i class="btn bi bi-circle-fill" style="font-size:1.5rem; color:orangered;"></i>
@@ -57,7 +61,10 @@
               </td>
               <td valing="midle">
                 <a class="btn" target="_blank" href="{{url_for('responderPesquisa',idpesquisa=pesquisa.cod_pesquisa)}}"><i class="bi bi-play-circle" style="font-size:1.5rem; color:black;"></i></a>
-              </td>                             
+              </td>                         
+              <td valing="midle">
+                <a class="btn" href="{{url_for('usuarioPesquisa',idpesquisa=pesquisa.cod_pesquisa)}}"><i class="bi bi-people" style="font-size:1.5rem; color:black;"></i></a>
+              </td>            
             </tr>
             {% endfor %}
       </tbody>

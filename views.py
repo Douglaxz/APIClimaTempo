@@ -579,13 +579,13 @@ def pesquisa():
     if pesquisa == "" or pesquisa == None:     
         pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
         .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_tipostatus)\
-        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus, tb_pesquisa.cod_tipostatus)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus, tb_pesquisa.codext_pesquisa, tb_pesquisa.cod_tipostatus)\
         .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
     else:
         pesquisas = tb_pesquisa.query.order_by(tb_pesquisa.desc_pesquisa)\
         .join(tb_tipostatus, tb_tipostatus.cod_tipostatus==tb_pesquisa.cod_tipostatus)\
-        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_tipostatus.desc_tipostatus, tb_pesquisa.codext_pesquisa, tb_pesquisa.cod_tipostatus)\
         .filter(tb_pesquisa.cod_user == session['coduser_logado'])\
         .filter(tb_pesquisa.nome_pesquisa.ilike(f'%{pesquisa}%'))\
         .paginate(page=page, per_page=ROWS_PER_PAGE, error_out=False)        
@@ -1009,7 +1009,6 @@ def responderOutraPergunta():
 #FUNÇÃO: mostrar o formulário de entrar com o código de pesquisa de outro usuário
 #PODE ACESSAR: todos
 #---------------------------------------------------------------------------------------------------------------------------------   
-
 @app.route('/verificarCodigoPesquisa', methods=['POST','GET'])
 def verificarCodigoPesquisa():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
@@ -1028,6 +1027,28 @@ def verificarCodigoPesquisa():
         return render_template('responderOutraPesquisa.html', titulo='Responder nova pesquisa', form=form)
 
 
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: usuarioPesquisa
+#FUNÇÃO: mostrar o formulário de entrar com o código de pesquisa de outro usuário
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------   
+@app.route('/usuarioPesquisa/<int:idpesquisa>')
+def usuarioPesquisa(idpesquisa):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        flash('Sessão expirou, favor logar novamente','danger')
+        return redirect(url_for('login',proxima=url_for('verificarCodigoPesquisa'))) 
 
+    page = request.args.get('page', 1, type=int)
     
-
+    
+    pesquisas = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
+        .join(tb_pesquisa, tb_respostauser.cod_pesquisa==tb_pesquisa.cod_pesquisa)\
+        .join(tb_user, tb_user.cod_user==tb_respostauser.cod_user)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_user.name_user)\
+        .filter(tb_pesquisa.cod_pesquisa == idpesquisa)\
+        .group_by(tb_respostauser.cod_user)\
+        .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
+        
+    
+    
+    return render_template('pesquisasRespondidas.html', titulo='teste', pesquisas=pesquisas)

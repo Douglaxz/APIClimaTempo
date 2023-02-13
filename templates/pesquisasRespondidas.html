@@ -1,0 +1,66 @@
+{% extends "template.html"%}
+{% block conteudo %}
+<!-- mostrar dados -->
+<div class="boxcentral">
+  <table class="table table-bordered table-responsiv table-hover">
+      <thead>
+        <tr>
+          <th width="60%">Nome</th>
+          <th width="20%">Código</th>
+          <th width="10%">Status</th>
+          <th width="10%" colspan="3" align="center">Ações</th>
+        </tr>
+      </thead>
+        <tbody>
+          {% for pesquisa in pesquisas.items %}
+          <tr>
+              <td>
+                {{ pesquisa.nome_pesquisa }}
+              </td>
+              <td>
+                {{ pesquisa.name_user }}
+              </td>              
+           
+            </tr>
+            {% endfor %}
+      </tbody>
+  </table>
+</div>
+<div class="boxcentral">
+<!-- Pagination Links-->
+<div class="text-right">
+  <a href="{{ url_for('pesquisa', page=pesquisas.prev_num) }}"
+     class="btn btn-outline-dark 
+     {% if pesquisas.page == 1 %}disabled{% endif %}">
+      &laquo;
+  </a>
+<!-- Loop through the number of pages to display a link for each-->
+  {% for page_num in pesquisas.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+{% if page_num %}
+<!-- Check for the active page and set the link to "Active"-->
+          {% if pesquisas.page == page_num %}
+          <a href="{{ url_for('pesquisa', page=page_num) }}"
+             class="btn btn-dark">
+              {{ page_num }}
+          </a>
+          {% else %}
+          <a href="{{ url_for('pesquisa', page=page_num) }}"
+             class="btn btn-outline-dark">
+              {{ page_num }}
+          </a>
+          {% endif %}
+      {% else %}
+          ...
+      {% endif %}
+  {% endfor %}
+  <a href="{{ url_for('pesquisa', page=pesquisas.next_num) }}"
+     class="btn btn-outline-dark 
+     {% if pesquisas.page == pesquisas.pages %}disabled{% endif %}">
+      &raquo;
+  </a>
+</div>
+<p class="text-right mt-3">
+ Mostrando página {{ pesquisas.page }} de {{ pesquisas.pages }}
+</p>
+</div>
+{% endblock%}
