@@ -14,7 +14,7 @@
     </div>
     <div class="boxformulario">
       <fieldset>
-        <input type="hidden" name="id" id="id" value="{{id}}">
+        <input type="hidden" name="idpesquisa" id="idpesquisa" value="{{idpesquisa}}">
         {{ form.csrf_token() }}
         <div class="form-group">{{ form.desc.label(class = 'rotulo') }}
           {{ form.desc(class = 'busca__input') }}</div>

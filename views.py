@@ -727,17 +727,19 @@ def criarPergunta():
     if not form.validate_on_submit():
         flash('Por favor, preencha todos os dados','danger')
         return redirect(url_for('criarPergunta'))
-    id = request.form['idpesquisa']
+    idpesquisa = request.form['idpesquisa']
     desc  = form.desc.data
     status = form.status.data
     ordem = form.ordem.data
-    cod_pesquisa = id
-    pergunta = tb_pergunta.query.filter_by(desc_pergunta=desc).first()\
-            .filter(tb_pergunta.cod_pesquisa == id)
-    if pergunta:
+
+    pergunta = tb_pergunta.query.order_by(tb_pergunta.desc_pergunta)\
+        .filter(tb_pergunta.desc_pergunta == desc)\
+        .filter(tb_pergunta.cod_pesquisa == idpesquisa)
+    rows = (pergunta.count())
+    if rows != 0 :
         flash ('Pergunta já existe','danger')
         return redirect(url_for('pesquisa')) 
-    novoPergunta = tb_pergunta(desc_pergunta=desc, status_pergunta=status, cod_pesquisa=cod_pesquisa, ordem_pergunta=ordem)
+    novoPergunta = tb_pergunta(desc_pergunta=desc, status_pergunta=status, cod_pesquisa=idpesquisa, ordem_pergunta=ordem)
     flash('Pergunta criada com sucesso!','success')
     db.session.add(novoPergunta)
     db.session.commit()
@@ -839,7 +841,7 @@ def criarResposta(idpesquisa,idpergunta):
     if not form.validate_on_submit():
         flash('Por favor, preencha todos os dados','danger')
         return redirect(url_for('criarResposta'))
-    idpergunta = request.form['id']
+    idpergunta = request.form['idpergunta']
     desc  = form.desc.data
     status = form.status.data
     certa = form.certa.data
@@ -950,13 +952,15 @@ def responderPergunta():
     #verificar se a pesquisa existe e pegar infomações de descrição da pesquisa
     pesquisa = tb_pesquisa.query.filter_by(cod_pesquisa=idpesquisa).first()
 
+  
+
     #pegar códigos das peguntas e colocar em um vetor
     perguntas = tb_pergunta.query.filter_by(cod_pesquisa=idpesquisa).order_by(tb_pergunta.ordem_pergunta)   
     for pergunta in perguntas:
         perguntasvetor.append(pergunta.cod_pergunta)
 
 
-
+    #return str(numeropergunta)
         #verificar se houve resposta de alguma pergunta
     if numeropergunta > 0:            
         respostauser = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
@@ -969,13 +973,14 @@ def responderPergunta():
             cod_pergunta  = perguntasvetor[numeropergunta-1]
             cod_user = session['coduser_logado']
             cod_resposta = form.opcoes.data
+
             novoRespostaUser = tb_respostauser(cod_pesquisa=cod_pesquisa, cod_pergunta=cod_pergunta, cod_user=cod_user, cod_resposta=cod_resposta)
             db.session.add(novoRespostaUser)
             db.session.commit() 
 
 
     if numeropergunta < len(perguntasvetor):           
-        dadospergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta-1]).first()
+        dadospergunta = tb_pergunta.query.filter_by(cod_pergunta=perguntasvetor[numeropergunta]).first()
         form.pergunta.data = dadospergunta.desc_pergunta
         form.opcoes.choices = [(resposta.cod_resposta, resposta.desc_resposta) for resposta in tb_resposta.query.filter_by(cod_pergunta=dadospergunta.cod_pergunta).filter(tb_resposta.status_resposta == 0)]
         #redirecionar para o usuário responder
@@ -983,41 +988,14 @@ def responderPergunta():
         numeropergunta = numeropergunta + 1
         return render_template('respondendoPergunta.html',titulo=pesquisa.nome_pesquisa,form=form,idpesquisa=idpesquisa,numeropergunta=numeropergunta)    
     else:
-        return "ACABOU"
-    
+        dados = {}
+        verificacao = tb_respostauser.query\
+            .join(tb_resposta, tb_resposta.cod_resposta==tb_respostauser.cod_resposta)\
+            .join(tb_pergunta, tb_pergunta.cod_pergunta==tb_respostauser.cod_pergunta)\
+            .add_columns(tb_pergunta.desc_pergunta, tb_respostauser.cod_resposta, tb_resposta.desc_resposta,tb_respostauser.cod_pergunta, tb_resposta.certa_resposta)\
+            .filter(tb_respostauser.cod_user == session['coduser_logado'])\
+            .filter(tb_respostauser.cod_pesquisa == idpesquisa)\
+            .order_by(tb_pergunta.ordem_pergunta)        
+        return render_template('finalpesquisa.html',id=id, titulo="Resultado da Pesquisa", dados=verificacao)
 
-
-
-    #numeropergunta = numeropergunta + 1
-    #if numeropergunta > len(perguntasvetor):
-
-#        respostas = []
-#
-#        verificacao = tb_respostauser.query\
-#        .join(tb_resposta, tb_resposta.cod_resposta==tb_respostauser.cod_resposta)\
-#        .join(tb_pergunta, tb_pergunta.cod_pergunta==tb_respostauser.cod_pergunta)\
-#        .add_columns(tb_pergunta.desc_pergunta, tb_respostauser.cod_resposta)\
-#        .filter(tb_respostauser.cod_user == session['coduser_logado'])\
-#        .order_by(tb_pergunta.ordem_pergunta)
-#        rows = (verificacao.count())
-        #return str(rows)
-        
-
- #       for resposta in verificacao:
- #           
-#            resultado = "["
-#            resultado = resultado + str(resposta.desc_pergunta)
-#            resultado = resultado + "|"
-#            resultado = resultado + str(resposta.cod_resposta)
-#            resultado = resultado + "|"
-
-
-#            resultado = resultado + "]"
-#            respostas.append(resultado)
-        
-        #return str(msg)
-
-        
-#        return render_template('finalpesquisa.html',id=id, titulo="Resultado da Pesquisa", respostas=respostas)
-#    else:
 
