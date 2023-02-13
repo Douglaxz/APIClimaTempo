@@ -5,10 +5,10 @@
     <i class="bi bi-check-circle" style="font-size:2rem; color:black;" data-toggle="tooltip" data-placement="right" title="Tipo Status"></i> {{ titulo }}
   </div>
   <div class="box_botoes">
-    <a class="btn btn_titulo" href="{{url_for('editarResposta',id=id, idpergunta=idpergunta,idresposta=idresposta)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn_titulo" href="{{url_for('editarResposta',idpergunta=idpergunta,idpesquisa=idpesquisa,idresposta=idresposta)}}"><i class="bi bi-pencil" style="font-size:1.5rem; color:white;"></i></a>
   </div>
   <div class="box_botoes">
-    <a class="btn btn_titulo" href="{{url_for('visualizarPergunta', id=id, idpergunta=idpergunta)}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
+    <a class="btn btn_titulo" href="{{url_for('visualizarPergunta',idpesquisa=idpesquisa,idpergunta=idpergunta,)}}"><i class="bi bi-reply" style="font-size:1.5rem; color:white;"></i></a>
   </div>
 </div>
 <div class="boxformulario">
