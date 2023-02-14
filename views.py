@@ -981,7 +981,6 @@ def responderPergunta():
         numeropergunta = numeropergunta + 1
         return render_template('respondendoPergunta.html',titulo=pesquisa.nome_pesquisa,form=form,idpesquisa=idpesquisa,numeropergunta=numeropergunta)    
     else:
-        dados = {}
         verificacao = tb_respostauser.query\
             .join(tb_resposta, tb_resposta.cod_resposta==tb_respostauser.cod_resposta)\
             .join(tb_pergunta, tb_pergunta.cod_pergunta==tb_respostauser.cod_pergunta)\
@@ -989,7 +988,7 @@ def responderPergunta():
             .filter(tb_respostauser.cod_user == session['coduser_logado'])\
             .filter(tb_respostauser.cod_pesquisa == idpesquisa)\
             .order_by(tb_pergunta.ordem_pergunta)        
-        return render_template('finalpesquisa.html',id=id, titulo="Resultado da Pesquisa", dados=verificacao)
+        return render_template('finalpesquisa.html',idpesquisa=idpesquisa, titulo="Resultado da Pesquisa", dados=verificacao)
 
 #---------------------------------------------------------------------------------------------------------------------------------
 #ROTA: responderOutraPergunta
@@ -1032,23 +1031,37 @@ def verificarCodigoPesquisa():
 #FUNÇÃO: mostrar o formulário de entrar com o código de pesquisa de outro usuário
 #PODE ACESSAR: todos
 #---------------------------------------------------------------------------------------------------------------------------------   
-@app.route('/usuarioPesquisa/<int:idpesquisa>')
-def usuarioPesquisa(idpesquisa):
+@app.route('/pesquisaRespondida/<int:idpesquisa>')
+def pesquisaRespondida(idpesquisa):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         flash('Sessão expirou, favor logar novamente','danger')
         return redirect(url_for('login',proxima=url_for('verificarCodigoPesquisa'))) 
-
+    form = FormularPesquisa()
     page = request.args.get('page', 1, type=int)
     
     
-    pesquisas = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
+    pesquisasRespondidas = tb_respostauser.query.order_by(tb_respostauser.cod_respostauser)\
         .join(tb_pesquisa, tb_respostauser.cod_pesquisa==tb_pesquisa.cod_pesquisa)\
         .join(tb_user, tb_user.cod_user==tb_respostauser.cod_user)\
-        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_user.name_user)\
+        .add_columns(tb_pesquisa.nome_pesquisa, tb_pesquisa.cod_pesquisa, tb_user.name_user,tb_respostauser.cod_user)\
         .filter(tb_pesquisa.cod_pesquisa == idpesquisa)\
         .group_by(tb_respostauser.cod_user)\
         .paginate(page=page, per_page=ROWS_PER_PAGE , error_out=False)
         
-    
-    
-    return render_template('pesquisasRespondidas.html', titulo='teste', pesquisas=pesquisas)
+    return render_template('pesquisasRespondidas.html', idpesquisa=idpesquisa,titulo='Pesquisas Respondidas', pesquisasRespondidas=pesquisasRespondidas,form=form)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#ROTA: mostrarResultadoPesquisa
+#FUNÇÃO: mostrar o formulário de resposta da pergunta
+#PODE ACESSAR: todos
+#---------------------------------------------------------------------------------------------------------------------------------
+@app.route('/mostrarResultadoPesquisa/<int:idpesquisa><int:user>', methods=['POST','GET'])
+def mostrarResultadoPesquisa(idpesquisa,user):
+    verificacao = tb_respostauser.query\
+        .join(tb_resposta, tb_resposta.cod_resposta==tb_respostauser.cod_resposta)\
+        .join(tb_pergunta, tb_pergunta.cod_pergunta==tb_respostauser.cod_pergunta)\
+        .add_columns(tb_pergunta.desc_pergunta, tb_respostauser.cod_resposta, tb_resposta.desc_resposta,tb_respostauser.cod_pergunta, tb_resposta.certa_resposta)\
+        .filter(tb_respostauser.cod_user == session['coduser_logado'])\
+        .filter(tb_respostauser.cod_pesquisa == idpesquisa)\
+        .order_by(tb_pergunta.ordem_pergunta)        
+    return render_template('finalpesquisa.html',idpesquisa=idpesquisa, titulo="Resultado da Pesquisa", dados=verificacao)    
