@@ -38,11 +38,11 @@ Para começar, verifique a instalação dos seguintes itens:
 - [X] Funcionalidade usuário
 - [X] Funcionalidade tipo de usuário
 - [X] Funcionalidade tipo de status de pesquisa
-- [ ] Funcionalidade Pesquisa
-- [ ] Funcionalidade Quiz
-- [ ] Funcionalidade Responder pesquisa
-- [ ] Funcionalidade Responder Quiz
-- [ ] Resultados de pesquisas e quiz
+- [X] Funcionalidade Pesquisa
+- [X] Funcionalidade Quiz
+- [X] Funcionalidade Responder pesquisa
+- [X] Funcionalidade Responder Quiz
+- [X] Resultados de pesquisas
 
 
 ## :paperclips: Colaborando:
