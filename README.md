@@ -4,7 +4,7 @@
  Este projeto visa contemplar as funcionalidades de um criador e gerenciador de quiz e pesquisas para pessoas e empresas
 
 ## :video_camera: Amostra do projeto:
-em construção
+[<img src="https://github.com/Douglaxz/personalTrainner/blob/main/quizmaker miniatura.png" width="100%">](https://www.youtube.com/watch?v=ExTNBGnP6Pw "Quizmaker")
 
 ## :rocket: Começando:
 Essas instruções permitirão que você obtenha uma cópia do projeto em operação na sua máquina local para fins de desenvolvimento e teste.
